@@ -2,6 +2,7 @@ package com.example.quiz;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import android.os.AsyncTask;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     RatingBar ratingBar;
     private TextView timeTakenTextView;
 
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,52 @@ public class MainActivity extends AppCompatActivity {
         BackgroundTask bt = new BackgroundTask();
         bt.execute("http://www.papademas.net:81/sample.txt"); //grab url
 
+        // Initialize the ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading questions...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMax(100);
+
+        // Start the thread to fetch questions
+        fetchQuestions();
+
         startTime = System.currentTimeMillis(); // Start the timer
 
     }//end onCreate
 
+
+    // Method to fetch questions from the server
+    private void fetchQuestions() {
+        // Show ProgressDialog
+        progressDialog.show();
+
+        // Start a new thread to fetch questions
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Simulate fetching questions by sleeping for some time
+                int progress = 0;
+                while (progress < 100) {
+                    try {
+                        Thread.sleep(50); // Simulate delay in fetching data
+                        progress++;
+                        progressDialog.setProgress(progress);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // After fetching questions, dismiss the ProgressDialog and start the quiz
+                progressDialog.dismiss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startQuiz();
+                    }
+                });
+            }
+        }).start();
+    }
     //background process to download the file from internet
     private class BackgroundTask extends AsyncTask<String, Integer, Void> {
 
