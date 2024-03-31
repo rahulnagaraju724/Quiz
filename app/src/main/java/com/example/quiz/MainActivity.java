@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,7 +90,11 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startQuiz();
+                        // Shuffle the questions
+                        Collections.shuffle(stringList);
+                        // Start the quiz
+                        //startQuiz();
+                        displayFirstQuestion();
                     }
                 });
             }
@@ -131,6 +136,17 @@ public class MainActivity extends AppCompatActivity {
             startQuiz();
         }
     }//end BackgroundTask class
+
+    // Method to display the first question after shuffling
+    private void displayFirstQuestion() {
+        // Display the first question if the list is not empty
+        if (!stringList.isEmpty()) {
+            txtView.setText(stringList.get(0));
+            startQuiz();
+        } else {
+            txtView.setText("No questions for today!!!");
+        }
+    }
 
     public void startQuiz() {
         buttonListener();
